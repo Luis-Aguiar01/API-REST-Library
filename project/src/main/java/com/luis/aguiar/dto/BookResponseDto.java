@@ -8,7 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +27,5 @@ public class BookResponseDto {
     @NotNull
     private Book.Status status;
 
-    @NotNull
-    private Set<Author> authors;
+    private List<Author> authors = Collections.emptyList();
 }

@@ -3,9 +3,7 @@ package com.luis.aguiar.models;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -24,11 +22,9 @@ public class Book {
     private UUID id;
 
     @NotBlank
-    @Size(max = 60)
     @Column(name = "title", nullable = false, unique = true)
     private String title;
 
-    @NotNull @NotEmpty
     @ManyToMany
     @JoinTable(
             name = "books_authors",
