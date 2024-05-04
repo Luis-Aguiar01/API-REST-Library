@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -39,9 +40,8 @@ public class Author {
     @Column(name = "nationality")
     private String nationality;
 
-    @NotNull @NotEmpty
     @ManyToMany(mappedBy = "authors")
-    private Set<Book> books;
+    private Set<Book> books = Collections.emptySet();
 
     @Override
     public boolean equals(Object o) {
