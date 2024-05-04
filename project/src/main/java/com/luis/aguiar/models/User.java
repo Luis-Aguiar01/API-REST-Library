@@ -13,7 +13,6 @@ import java.util.UUID;
 @Table(name = "Users")
 @NoArgsConstructor @AllArgsConstructor
 @Setter @Getter @ToString
-@JsonPropertyOrder( { "id", "firstName", "lastName", "email", "password", "birthDate" } )
 public class User {
 
     @Id
@@ -42,6 +41,12 @@ public class User {
 
     @Column(name = "has_book_on_loan", nullable = false)
     private Boolean hasBookOnLoan = true;
+
+    @Column(name = "type", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Type type = Type.NORMAL;
+
+    public enum Type { NORMAL, ADMIN };
 
     @Override
     public boolean equals(Object o) {

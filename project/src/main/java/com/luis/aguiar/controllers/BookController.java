@@ -29,7 +29,6 @@ public class BookController {
     }
 
     @GetMapping("/books/{id}")
-    @Transactional
     public ResponseEntity<BookResponseDto> findBookById(@PathVariable(name = "id") UUID uuid) {
         Book result = service.findBookById(uuid);
         return ResponseEntity.status(HttpStatus.FOUND).body(BookMapper.toResponseDto(result));
@@ -37,7 +36,7 @@ public class BookController {
 
     @GetMapping("/books")
     @Transactional
-    public ResponseEntity<List<BookResponseDto>> getAllBooks() {
+    public ResponseEntity<List<BookResponseDto>> findAllBooks() {
         List<Book> books = service.getAll();
         List<BookResponseDto> responseBooks = books.stream()
                 .map(BookMapper::toResponseDto)

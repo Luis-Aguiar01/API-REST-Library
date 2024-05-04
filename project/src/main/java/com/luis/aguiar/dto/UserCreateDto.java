@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter @ToString
-@JsonPropertyOrder( { "fistName", "lastName", "email", "password", "birthDate" } )
 public class UserCreateDto {
 
     @NotBlank
