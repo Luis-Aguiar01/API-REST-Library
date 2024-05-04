@@ -30,7 +30,7 @@ public class BookController {
 
     @GetMapping("/books/{id}")
     public ResponseEntity<BookResponseDto> findBookById(@PathVariable(name = "id") UUID uuid) {
-        Book result = service.findBookById(uuid);
+        Book result = service.findById(uuid);
         return ResponseEntity.status(HttpStatus.FOUND).body(BookMapper.toResponseDto(result));
     }
 
@@ -52,5 +52,41 @@ public class BookController {
                 .map(BookMapper::toResponseDto)
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(booksDto);
+    }
+
+    @GetMapping("/books/author")
+    @Transactional
+    public ResponseEntity<List<BookResponseDto>> findAllByAuthor(@RequestParam String firstName,
+                                                                 @RequestParam String lastName) {
+        List<Book> books = service.getAllByAuthor(firstName, lastName);
+        List<BookResponseDto> bookDto = books.stream()
+                .map(BookMapper::toResponseDto)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(bookDto);
+    }
+
+    @GetMapping("/books/status")
+    @Transactional
+    public ResponseEntity<List<BookResponseDto>> findAllByStatus(@RequestParam Book.Status status) {
+        List<Book> books = service.getAllByStatus(status);
+        List<BookResponseDto> booksDto = books.stream()
+                .map(BookMapper::toResponseDto)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(booksDto);
+    }
+
+    @PutMapping("/books/{id}")
+    @Transactional
+    public ResponseEntity<BookResponseDto> updateBookData(@PathVariable(name = "id") UUID uuid,
+                                                          @RequestBody @Valid BookCreateDto bookDto) {
+        Book book = service.update(uuid, BookMapper.toBook(bookDto));
+        return ResponseEntity.ok(BookMapper.toResponseDto(book));
+    }
+
+    @DeleteMapping("/books/{id}")
+    @Transactional
+    public ResponseEntity<Object> deleteBook(@PathVariable(name = "id") UUID uuid) {
+        service.delete(uuid);
+        return ResponseEntity.ok("Book deleted successfully.");
     }
 }

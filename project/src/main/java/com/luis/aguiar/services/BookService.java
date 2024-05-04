@@ -25,7 +25,7 @@ public class BookService {
         }
     }
 
-    public Book findBookById(UUID uuid) {
+    public Book findById(UUID uuid) {
         return repository.findById(uuid).orElseThrow(
                 () -> new EntityNotFoundException("Book not found.")
         );
@@ -37,5 +37,27 @@ public class BookService {
 
     public List<Book> getAllByName(String name) {
         return repository.findByTitleContainingIgnoreCase(name);
+    }
+
+    public List<Book> getAllByAuthor(String firstName, String lastName) {
+        return repository.findByAuthorsFirstNameAndAuthorsLastName(firstName, lastName);
+    }
+
+    public List<Book> getAllByStatus(Book.Status status) {
+        return repository.findByStatus(status);
+    }
+
+    public Book update(UUID uuid, Book bookNewData) {
+        Book findBook = findById(uuid);
+        findBook.setTitle(bookNewData.getTitle());
+        findBook.setPublicationDate(bookNewData.getPublicationDate());
+        findBook.setStatus(bookNewData.getStatus());
+
+        return repository.save(findBook);
+    }
+
+    public void delete(UUID uuid) {
+        Book book = findById(uuid);
+        repository.delete(book);
     }
 }
