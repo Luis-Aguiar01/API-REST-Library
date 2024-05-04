@@ -41,7 +41,7 @@ public class User {
     private LocalDate birthDate;
 
     @Column(name = "has_book_on_loan", nullable = false)
-    private boolean hasBookOnLoan;
+    private Boolean hasBookOnLoan = true;
 
     @Override
     public boolean equals(Object o) {

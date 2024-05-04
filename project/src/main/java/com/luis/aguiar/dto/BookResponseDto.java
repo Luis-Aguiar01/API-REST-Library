@@ -6,11 +6,9 @@ import com.luis.aguiar.models.Book;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
-
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,5 +25,5 @@ public class BookResponseDto {
     @NotNull
     private Book.Status status;
 
-    private List<Author> authors = Collections.emptyList();
+    private Set<Author> authors = Collections.emptySet();
 }

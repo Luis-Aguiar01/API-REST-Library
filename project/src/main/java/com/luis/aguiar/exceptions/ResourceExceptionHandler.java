@@ -13,13 +13,25 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(UniqueDataViolationException.class)
     public ResponseEntity<ErrorModel> uniqueDataViolationException(UniqueDataViolationException ex, HttpServletRequest request) {
-        ErrorModel exception = new ErrorModel();
+        var exception = configNewExceptionData(ex, request, "Unique data violation.", HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorModel> entityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
+        var exception = configNewExceptionData(ex, request, "Entity not found.", HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception);
+    }
+
+    private ErrorModel configNewExceptionData(Exception ex, HttpServletRequest request, String error, HttpStatus status) {
+        var exception = new ErrorModel();
+
         exception.setTimestamp(Instant.now());
-        exception.setError("Unique date violation.");
+        exception.setError(error);
         exception.setMessage(ex.getMessage());
-        exception.setStatus(HttpStatus.CONFLICT.value());
+        exception.setStatus(status.value());
         exception.setPath(request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception);
+        return exception;
     }
 }
