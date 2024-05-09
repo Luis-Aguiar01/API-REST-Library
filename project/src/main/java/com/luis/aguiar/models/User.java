@@ -1,19 +1,25 @@
 package com.luis.aguiar.models;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDate;
-import java.util.Objects;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "Users")
 @NoArgsConstructor @AllArgsConstructor
 @Setter @Getter @ToString
-public class User {
+@EqualsAndHashCode(of = "id")
+@Builder
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -42,21 +48,39 @@ public class User {
     @Column(name = "has_book_on_loan", nullable = false)
     private Boolean hasBookOnLoan = true;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private Type type = Type.NORMAL;
+    private Role role;
 
-    public enum Type { NORMAL, ADMIN };
+    public enum Role { NORMAL, ADMIN }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(getId(), user.getId());
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

@@ -1,6 +1,5 @@
 package com.luis.aguiar.services;
 
-import com.luis.aguiar.dto.UserCreateDto;
 import com.luis.aguiar.exceptions.EntityNotFoundException;
 import com.luis.aguiar.exceptions.UniqueDataViolationException;
 import com.luis.aguiar.models.User;
