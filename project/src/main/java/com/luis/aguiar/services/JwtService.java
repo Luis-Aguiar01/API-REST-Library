@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.security.Key;
@@ -30,11 +31,17 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
+        String role = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("User has no roles"));
+
         return Jwts
                 .builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 24 * 60))
+                .claim("role", role.substring("ROLE_".length()))
                 .signWith(getSignKey())
                 .compact();
     }

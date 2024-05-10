@@ -10,28 +10,29 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
-
 @RestController
 @RequestMapping("library/v1/authors")
+@Transactional
 public class AuthorController {
 
     @Autowired
     private AuthorService service;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthorResponseDto> createAuthor(@RequestBody @Valid AuthorCreateDto authorDto) {
         Author author = service.save(AuthorMapper.toAuthor(authorDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(AuthorMapper.toResponseDto(author));
     }
 
     @GetMapping
-    @Transactional
     public ResponseEntity<List<AuthorResponseDto>> findAllAuthors() {
         List<Author> authors = service.findAll();
         List<AuthorResponseDto> authorsDto = authors.stream()
@@ -41,14 +42,14 @@ public class AuthorController {
     }
 
     @GetMapping("/{id}")
-    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthorResponseDto> findAuthorById(@PathVariable(name = "id") UUID uuid) {
         Author author = service.findById(uuid);
         return ResponseEntity.status(HttpStatus.FOUND).body(AuthorMapper.toResponseDto(author));
     }
 
     @PutMapping("/{id}")
-    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthorResponseDto> updateAuthorData(@PathVariable(name = "id") UUID uuid,
                                                               @RequestBody @Valid AuthorCreateDto authorDto) {
         Author author = service.update(uuid, AuthorMapper.toAuthor(authorDto));
@@ -56,6 +57,7 @@ public class AuthorController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deleteAuthor(@PathVariable(name = "id") UUID uuid) {
         service.delete(uuid);
         return ResponseEntity.ok("Author deleted successfully.");

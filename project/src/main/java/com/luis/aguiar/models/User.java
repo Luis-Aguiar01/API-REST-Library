@@ -1,5 +1,6 @@
 package com.luis.aguiar.models;
 
+import com.luis.aguiar.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 @NoArgsConstructor @AllArgsConstructor
 @Setter @Getter @ToString
 @EqualsAndHashCode(of = "id")
@@ -52,11 +53,12 @@ public class User implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    public enum Role { NORMAL, ADMIN }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        if (this.role == Role.USER) {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 
     @Override
