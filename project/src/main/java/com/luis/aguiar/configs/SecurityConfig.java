@@ -31,11 +31,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST,"/library/v1/users").permitAll()
                         .requestMatchers(HttpMethod.GET,"/library/v1/books").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/library/v1/books/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/library/v1/books/name").permitAll()
                         .requestMatchers(HttpMethod.GET,"/library/v1/books/author").permitAll()
                         .requestMatchers(HttpMethod.GET,"/library/v1/books/status").permitAll()
                         .requestMatchers(HttpMethod.GET,"/library/v1/authors").permitAll()
                         .requestMatchers(HttpMethod.POST,"/library/v1/users/authenticate").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/library/v1/loans").permitAll()
                         .anyRequest()
                         .authenticated()
                 )

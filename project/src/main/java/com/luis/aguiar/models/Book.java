@@ -15,6 +15,7 @@ import java.util.UUID;
 @Table(name = "Books")
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter @ToString
+@EqualsAndHashCode(of = "id")
 @JsonPropertyOrder({ "id, title, author, publicationDate, status" })
 public class Book {
 
@@ -44,16 +45,4 @@ public class Book {
     private Status status;
 
     public enum Status { AVAILABLE, UNAVAILABLE };
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Book book)) return false;
-        return Objects.equals(getId(), book.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
 }

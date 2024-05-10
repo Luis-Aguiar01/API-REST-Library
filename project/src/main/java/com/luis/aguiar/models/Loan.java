@@ -12,7 +12,9 @@ import java.util.UUID;
 @Table(name = "Loans")
 @NoArgsConstructor @AllArgsConstructor
 @Setter @Getter @ToString
-@JsonPropertyOrder( { "id", "book", "user", "loanDate", "returnDate" } )
+@Builder
+@EqualsAndHashCode(of = "id")
+@JsonPropertyOrder( { "id", "book", "user", "loanDate", "returnDate", "isActive" } )
 public class Loan {
 
     @Id
@@ -33,15 +35,6 @@ public class Loan {
     @NotNull
     private LocalDate returnDate;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Loan loan)) return false;
-        return Objects.equals(getId(), loan.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
+    @NotNull
+    private Boolean isActive;
 }

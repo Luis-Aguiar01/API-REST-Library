@@ -21,7 +21,7 @@ public class BookMapper {
         dto.setTitle(book.getTitle());
         dto.setPublicationDate(book.getPublicationDate());
         dto.setStatus(book.getStatus());
-
+        dto.setId(book.getId());
 
         Set<Author> authors = book.getAuthors().stream()
                 .map(author -> new Author())

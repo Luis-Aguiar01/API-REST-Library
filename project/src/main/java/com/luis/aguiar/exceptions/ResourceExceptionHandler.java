@@ -23,6 +23,12 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception);
     }
 
+    @ExceptionHandler({ BookNotAvailableException.class, LoanNotAvailableException.class })
+    public ResponseEntity<ErrorModel> bookNotAvailableException(BookNotAvailableException ex, HttpServletRequest request) {
+        var exception = configNewExceptionData(ex, request, "Resource not available.", HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception);
+    }
+
     private ErrorModel configNewExceptionData(Exception ex, HttpServletRequest request, String error, HttpStatus status) {
         var exception = new ErrorModel();
 

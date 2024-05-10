@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Controller
-@RequestMapping("/library/v1/books")
+@RestController
+@RequestMapping("library/v1/books")
 @Transactional
 public class BookController {
 
@@ -32,7 +32,6 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookResponseDto> findBookById(@PathVariable(name = "id") UUID uuid) {
         Book result = service.findById(uuid);
         return ResponseEntity.status(HttpStatus.FOUND).body(BookMapper.toResponseDto(result));

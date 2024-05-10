@@ -9,12 +9,16 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter @ToString
-@JsonPropertyOrder( { "title", "authors", "publicationDate", "status" } )
+@JsonPropertyOrder( { "id", "title", "authors", "publicationDate", "status" } )
 public class BookResponseDto {
+
+    @NotNull
+    private UUID id;
 
     @NotBlank
     private String title;
