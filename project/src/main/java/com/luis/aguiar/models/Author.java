@@ -1,5 +1,6 @@
 package com.luis.aguiar.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Table(name = "Authors")
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter @ToString
+@EqualsAndHashCode(of = "id")
 @JsonPropertyOrder( { "id", "firstName", "lastName", "birthDate", "nationality" } )
 public class Author {
 
@@ -42,16 +44,4 @@ public class Author {
 
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books = Collections.emptySet();
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Author author)) return false;
-        return Objects.equals(getId(), author.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
 }

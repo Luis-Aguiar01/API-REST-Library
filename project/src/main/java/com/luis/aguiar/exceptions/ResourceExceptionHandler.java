@@ -1,18 +1,20 @@
 package com.luis.aguiar.exceptions;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
+import java.io.IOException;
 import java.time.Instant;
 
-@ControllerAdvice
-public class ResourceExceptionHandler {
+@RestControllerAdvice
+public class ResourceExceptionHandler implements AuthenticationEntryPoint {
 
     @ExceptionHandler(UniqueDataViolationException.class)
     public ResponseEntity<ErrorModel> uniqueDataViolationException(UniqueDataViolationException ex,
@@ -49,12 +51,6 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception);
     }
 
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ErrorModel> expiredJwtException(ExpiredJwtException ex, HttpServletRequest request) {
-        var exception = configNewExceptionData(ex, request, "Unauthorized.", HttpStatus.UNAUTHORIZED);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception);
-    }
-
     private ErrorModel configNewExceptionData(Exception ex, HttpServletRequest request,
                                               String error,
                                               HttpStatus status) {
@@ -67,5 +63,19 @@ public class ResourceExceptionHandler {
         exception.setPath(request.getRequestURI());
 
         return exception;
+    }
+
+    @Override
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException) throws IOException, ServletException {
+
+        String errorMessage = "Not authorized: " + authException.getMessage();
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+
+        String jsonErrorMessage = String.format("{\"error\": \"%s\"}", errorMessage);
+        response.getWriter().write(jsonErrorMessage);
     }
 }

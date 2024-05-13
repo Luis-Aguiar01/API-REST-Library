@@ -2,6 +2,7 @@ package com.luis.aguiar.services;
 
 import com.luis.aguiar.dto.LoanRequestDto;
 import com.luis.aguiar.dto.LoanResponseDto;
+import com.luis.aguiar.enums.Status;
 import com.luis.aguiar.exceptions.BookNotAvailableException;
 import com.luis.aguiar.exceptions.EntityNotFoundException;
 import com.luis.aguiar.exceptions.LoanNotAvailableException;
@@ -34,7 +35,7 @@ public class LoanService {
         Book book = bookRepository.findById(loanRequest.getId())
                 .orElseThrow(() -> new EntityNotFoundException("No books with this ID could be found."));
 
-        if (book.getStatus() == Book.Status.UNAVAILABLE) {
+        if (book.getStatus() == Status.UNAVAILABLE) {
             throw new BookNotAvailableException("The book is not available.");
         }
 
@@ -57,7 +58,7 @@ public class LoanService {
                 .build();
         loanRepository.save(loan);
 
-        book.setStatus(Book.Status.UNAVAILABLE);
+        book.setStatus(Status.UNAVAILABLE);
         user.setHasBookOnLoan(false);
 
         return LoanMapper.toResponseDto(loan);
@@ -111,7 +112,7 @@ public class LoanService {
         loan.setActive(false);
 
         Book book = loan.getBook();
-        book.setStatus(Book.Status.AVAILABLE);
+        book.setStatus(Status.AVAILABLE);
         bookRepository.save(book);
 
         User user = loan.getUser();

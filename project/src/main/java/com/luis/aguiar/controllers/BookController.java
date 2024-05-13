@@ -18,7 +18,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("library/v1/books")
-@Transactional
 public class BookController {
 
     @Autowired
@@ -33,45 +32,33 @@ public class BookController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BookResponseDto> findBookById(@PathVariable(name = "id") UUID uuid) {
-        Book result = service.findById(uuid);
-        return ResponseEntity.status(HttpStatus.FOUND).body(BookMapper.toResponseDto(result));
+        BookResponseDto result = service.findById(uuid);
+        return ResponseEntity.status(HttpStatus.FOUND).body(result);
     }
 
     @GetMapping
     public ResponseEntity<List<BookResponseDto>> findAllBooks() {
-        List<Book> books = service.getAll();
-        List<BookResponseDto> responseBooks = books.stream()
-                .map(BookMapper::toResponseDto)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(responseBooks);
+        List<BookResponseDto> books = service.getAll();
+        return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
     @GetMapping("/name")
     public ResponseEntity<List<BookResponseDto>> findAllByName(@RequestParam String name) {
-        List<Book> books = service.getAllByName(name);
-        List<BookResponseDto> booksDto = books.stream()
-                .map(BookMapper::toResponseDto)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(booksDto);
+        List<BookResponseDto> books = service.getAllByName(name);
+        return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
     @GetMapping("/author")
     public ResponseEntity<List<BookResponseDto>> findAllByAuthor(@RequestParam String firstName,
                                                                  @RequestParam String lastName) {
-        List<Book> books = service.getAllByAuthor(firstName, lastName);
-        List<BookResponseDto> bookDto = books.stream()
-                .map(BookMapper::toResponseDto)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(bookDto);
+        List<BookResponseDto> books = service.getAllByAuthor(firstName, lastName);
+        return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
     @GetMapping("/status")
     public ResponseEntity<List<BookResponseDto>> findAllByStatus(@RequestParam Book.Status status) {
-        List<Book> books = service.getAllByStatus(status);
-        List<BookResponseDto> booksDto = books.stream()
-                .map(BookMapper::toResponseDto)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(booksDto);
+        List<BookResponseDto> books = service.getAllByStatus(status);
+        return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
     @PutMapping("/{id}")

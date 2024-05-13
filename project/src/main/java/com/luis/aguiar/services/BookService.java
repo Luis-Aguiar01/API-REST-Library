@@ -1,12 +1,14 @@
 package com.luis.aguiar.services;
 
+import com.luis.aguiar.dto.BookResponseDto;
 import com.luis.aguiar.exceptions.EntityNotFoundException;
 import com.luis.aguiar.exceptions.UniqueDataViolationException;
+import com.luis.aguiar.mappers.BookMapper;
 import com.luis.aguiar.models.Book;
 import com.luis.aguiar.repositories.BookRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -25,39 +27,64 @@ public class BookService {
         }
     }
 
-    public Book findById(UUID uuid) {
-        return repository.findById(uuid).orElseThrow(
-                () -> new EntityNotFoundException("Book not found.")
-        );
+    @Transactional
+    public BookResponseDto findById(UUID uuid) {
+        Book book = repository.findById(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
+        return BookMapper.toResponseDto(book);
     }
 
-    public List<Book> getAll() {
-        return repository.findAll();
+    @Transactional
+    public List<BookResponseDto> getAll() {
+        List<Book> books = repository.findAll();
+        List<BookResponseDto> booksDto = books.stream()
+                .map(BookMapper::toResponseDto)
+                .toList();
+        return booksDto;
     }
 
-    public List<Book> getAllByName(String name) {
-        return repository.findByTitleContainingIgnoreCase(name);
+    @Transactional
+    public List<BookResponseDto> getAllByName(String name) {
+        List<Book> books = repository.findByTitleContainingIgnoreCase(name);
+        List<BookResponseDto> booksDto = books.stream()
+                .map(BookMapper::toResponseDto)
+                .toList();
+        return booksDto;
     }
 
-    public List<Book> getAllByAuthor(String firstName, String lastName) {
-        return repository.findByAuthorsFirstNameAndAuthorsLastName(firstName, lastName);
+    @Transactional
+    public List<BookResponseDto> getAllByAuthor(String firstName, String lastName) {
+        List<Book> books = repository.findByAuthorsFirstNameAndAuthorsLastName(firstName, lastName);
+        List<BookResponseDto> booksDto = books.stream()
+                .map(BookMapper::toResponseDto)
+                .toList();
+        return booksDto;
     }
 
-    public List<Book> getAllByStatus(Book.Status status) {
-        return repository.findByStatus(status);
+    @Transactional
+    public List<BookResponseDto> getAllByStatus(Book.Status status) {
+        List<Book> books = repository.findByStatus(status);
+        List<BookResponseDto> booksDto = books.stream()
+                .map(BookMapper::toResponseDto)
+                .toList();
+        return booksDto;
     }
 
     public Book update(UUID uuid, Book bookNewData) {
-        Book findBook = findById(uuid);
-        findBook.setTitle(bookNewData.getTitle());
-        findBook.setPublicationDate(bookNewData.getPublicationDate());
-        findBook.setStatus(bookNewData.getStatus());
+        Book book = repository.findById(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
 
-        return repository.save(findBook);
+        book.setTitle(bookNewData.getTitle());
+        book.setPublicationDate(bookNewData.getPublicationDate());
+        book.setStatus(bookNewData.getStatus());
+
+        return repository.save(book);
     }
 
+    @Transactional
     public void delete(UUID uuid) {
-        Book book = findById(uuid);
+        Book book = repository.findById(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
         repository.delete(book);
     }
 }

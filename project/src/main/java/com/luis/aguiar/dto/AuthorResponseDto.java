@@ -1,5 +1,6 @@
 package com.luis.aguiar.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.luis.aguiar.models.Book;
 import jakarta.validation.constraints.NotBlank;
@@ -27,5 +28,6 @@ public class AuthorResponseDto {
     @NotBlank
     private String nationality;
 
-    private Set<Book> books = Collections.emptySet();
+    @JsonBackReference
+    private Set<BookResponseDto> books = Collections.emptySet();
 }

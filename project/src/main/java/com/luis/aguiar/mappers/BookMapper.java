@@ -1,13 +1,12 @@
 package com.luis.aguiar.mappers;
 
+import com.luis.aguiar.dto.AuthorResponseDto;
 import com.luis.aguiar.dto.BookCreateDto;
 import com.luis.aguiar.dto.BookResponseDto;
-import com.luis.aguiar.models.Author;
 import com.luis.aguiar.models.Book;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,8 +22,8 @@ public class BookMapper {
         dto.setStatus(book.getStatus());
         dto.setId(book.getId());
 
-        Set<Author> authors = book.getAuthors().stream()
-                .map(author -> new Author())
+        Set<AuthorResponseDto> authors = book.getAuthors().stream()
+                .map(AuthorMapper::toResponseDto)
                 .collect(Collectors.toSet());
 
         dto.setAuthors(authors);

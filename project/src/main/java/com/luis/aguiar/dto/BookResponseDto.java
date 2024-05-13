@@ -1,15 +1,13 @@
 package com.luis.aguiar.dto;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.luis.aguiar.models.Author;
 import com.luis.aguiar.models.Book;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,5 +27,6 @@ public class BookResponseDto {
     @NotNull
     private Book.Status status;
 
-    private Set<Author> authors = Collections.emptySet();
+    @JsonManagedReference
+    private Set<AuthorResponseDto> authors = Collections.emptySet();
 }

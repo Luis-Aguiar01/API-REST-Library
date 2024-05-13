@@ -5,21 +5,17 @@ import com.luis.aguiar.dto.AuthorResponseDto;
 import com.luis.aguiar.mappers.AuthorMapper;
 import com.luis.aguiar.models.Author;
 import com.luis.aguiar.services.AuthorService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("library/v1/authors")
-@Transactional
 public class AuthorController {
 
     @Autowired
@@ -34,18 +30,15 @@ public class AuthorController {
 
     @GetMapping
     public ResponseEntity<List<AuthorResponseDto>> findAllAuthors() {
-        List<Author> authors = service.findAll();
-        List<AuthorResponseDto> authorsDto = authors.stream()
-                .map(AuthorMapper::toResponseDto)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(authorsDto);
+        List<AuthorResponseDto> authors = service.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(authors);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthorResponseDto> findAuthorById(@PathVariable(name = "id") UUID uuid) {
-        Author author = service.findById(uuid);
-        return ResponseEntity.status(HttpStatus.FOUND).body(AuthorMapper.toResponseDto(author));
+        AuthorResponseDto author = service.findById(uuid);
+        return ResponseEntity.status(HttpStatus.FOUND).body(author);
     }
 
     @PutMapping("/{id}")

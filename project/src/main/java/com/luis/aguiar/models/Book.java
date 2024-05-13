@@ -1,15 +1,13 @@
 package com.luis.aguiar.models;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.luis.aguiar.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "Books")
@@ -43,6 +41,4 @@ public class Book {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    public enum Status { AVAILABLE, UNAVAILABLE };
 }
