@@ -17,6 +17,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class LoanService {
@@ -51,7 +53,7 @@ public class LoanService {
                 .user(user)
                 .loanDate(today)
                 .returnDate(todayPlusSevenDays)
-                .isActive(true)
+                .active(true)
                 .build();
         loanRepository.save(loan);
 
@@ -59,5 +61,61 @@ public class LoanService {
         user.setHasBookOnLoan(false);
 
         return LoanMapper.toResponseDto(loan);
+    }
+
+    @Transactional
+    public LoanResponseDto findById(UUID id) {
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No loan with this ID could be found."));
+
+        return LoanMapper.toResponseDto(loan);
+    }
+
+    @Transactional
+    public List<LoanResponseDto> findByStatus(Boolean status) {
+        List<Loan> loans = loanRepository.findByActive(status);
+
+        return loans.stream()
+                .map(LoanMapper::toResponseDto)
+                .toList();
+    }
+
+    @Transactional
+    public List<LoanResponseDto> findByUserEmail(String email) {
+        List<Loan> loans = loanRepository.findByUserEmail(email);
+
+        return loans.stream()
+                .map(LoanMapper::toResponseDto)
+                .toList();
+    }
+
+    @Transactional
+    public List<LoanResponseDto> findByUserAndActive(String email, Boolean status) {
+        List<Loan> loans = loanRepository.findByUserEmailAndActive(email, status);
+
+        return loans.stream()
+                .map(LoanMapper::toResponseDto)
+                .toList();
+    }
+
+    @Transactional
+    public void returnLoan(UUID id) {
+        Loan loan = loanRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No loan with this ID could be found."));
+
+        if (!loan.getActive()) {
+            throw new LoanNotAvailableException("The loan has already been returned.");
+        }
+
+        loan.setReturnDate(LocalDate.now());
+        loan.setActive(false);
+
+        Book book = loan.getBook();
+        book.setStatus(Book.Status.AVAILABLE);
+        bookRepository.save(book);
+
+        User user = loan.getUser();
+        user.setHasBookOnLoan(true);
+        userRepository.save(user);
     }
 }

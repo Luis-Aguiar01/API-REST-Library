@@ -62,4 +62,12 @@ public class AuthorController {
         service.delete(uuid);
         return ResponseEntity.ok("Author deleted successfully.");
     }
+
+    @PostMapping("/{authorID}/{bookID}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> associateAuthorWithBook(@PathVariable(name = "bookID") UUID bookID,
+                                                        @PathVariable(name = "authorID") UUID authorID) {
+        service.associateAuthorWithBook(bookID, authorID);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

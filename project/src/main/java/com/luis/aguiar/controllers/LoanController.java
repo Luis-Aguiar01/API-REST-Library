@@ -2,25 +2,16 @@ package com.luis.aguiar.controllers;
 
 import com.luis.aguiar.dto.LoanRequestDto;
 import com.luis.aguiar.dto.LoanResponseDto;
-import com.luis.aguiar.mappers.LoanMapper;
-import com.luis.aguiar.models.Book;
-import com.luis.aguiar.models.Loan;
-import com.luis.aguiar.models.User;
-import com.luis.aguiar.repositories.UserRepository;
-import com.luis.aguiar.services.BookService;
 import com.luis.aguiar.services.LoanService;
-import com.luis.aguiar.services.UserService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("library/v1/loans")
@@ -29,8 +20,45 @@ public class LoanController {
     private LoanService loanService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<LoanResponseDto> createNewLoan(@RequestBody @Valid LoanRequestDto loanRequest) {
         LoanResponseDto loan = loanService.saveLoan(loanRequest);
         return ResponseEntity.status(HttpStatus.OK).body(loan);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LoanResponseDto> findLoanById(@PathVariable(name = "id") UUID id) {
+        LoanResponseDto loan = loanService.findById(id);
+        return ResponseEntity.status(HttpStatus.FOUND).body(loan);
+    }
+
+    @GetMapping("/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<LoanResponseDto>> findByStatus(@PathParam(value = "status") Boolean status) {
+        List<LoanResponseDto> loan = loanService.findByStatus(status);
+        return ResponseEntity.status(HttpStatus.OK).body(loan);
+    }
+
+    @GetMapping("/user/{email}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER') AND #email == authentication.principal.username")
+    public ResponseEntity<List<LoanResponseDto>> findLoanByUser(@PathVariable(name = "email") String email) {
+        List<LoanResponseDto> loans = loanService.findByUserEmail(email);
+        return ResponseEntity.status(HttpStatus.OK).body(loans);
+    }
+
+    @GetMapping("/user/{email}/{status}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER') AND #email == authentication.principal.username")
+    public ResponseEntity<List<LoanResponseDto>> findByUserAndStatus(@PathVariable(name = "email") String email,
+                                                                     @PathVariable(name = "status") Boolean status) {
+        List<LoanResponseDto> loans = loanService.findByUserAndActive(email, status);
+        return ResponseEntity.status(HttpStatus.OK).body(loans);
+    }
+
+    @PostMapping("/return/{email}/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER') AND #email == authentication.principal.username")
+    public ResponseEntity<Void> returnLoan(@PathVariable(name = "id") UUID id) {
+        loanService.returnLoan(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -36,5 +36,5 @@ public class Loan {
     private LocalDate returnDate;
 
     @NotNull
-    private Boolean isActive;
+    private Boolean active;
 }
