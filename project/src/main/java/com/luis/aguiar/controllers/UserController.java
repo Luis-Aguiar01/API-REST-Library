@@ -6,6 +6,9 @@ import com.luis.aguiar.models.User;
 import com.luis.aguiar.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,14 +25,25 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserCreateDto userDto) {
         User user = service.save(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toResponseDto(user));
+        UserResponseDto userResponseDto = UserMapper.toResponseDto(user);
+
+        addFindByIdReference(userResponseDto, user.getId());
+        addUserUpdateReference(userResponseDto);
+        addUserDeleteReference(userResponseDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> findUserById(@PathVariable(name = "id") UUID uuid) {
         User user = service.findById(uuid);
-        return ResponseEntity.status(HttpStatus.FOUND).body(UserMapper.toResponseDto(user));
+        UserResponseDto userResponseDto = UserMapper.toResponseDto(user);
+
+        addUserUpdateReference(userResponseDto);
+        addUserDeleteReference(userResponseDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
 
     @GetMapping
@@ -37,7 +51,16 @@ public class UserController {
     public ResponseEntity<List<UserResponseDto>> findAllUsers() {
         List<User> users = service.findAll();
         List<UserResponseDto> usersDto = users.stream()
-                .map(UserMapper::toResponseDto)
+                .map(user -> {
+                    UUID uuid = user.getId();
+                    UserResponseDto userResponseDto = UserMapper.toResponseDto(user);
+
+                    addFindByIdReference(userResponseDto, uuid);
+                    addUserDeleteReference(userResponseDto);
+                    addUserUpdateReference(userResponseDto);
+
+                    return userResponseDto;
+                })
                 .toList();
         return ResponseEntity.ok(usersDto);
     }
@@ -47,7 +70,12 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable(name = "email") String email,
                                                       @RequestBody UserCreateDto userDto) {
         User user = service.update(email, UserMapper.toUser(userDto));
-        return ResponseEntity.status(HttpStatus.OK).body(UserMapper.toResponseDto(user));
+        UserResponseDto userResponseDto = UserMapper.toResponseDto(user);
+
+        addUserDeleteReference(userResponseDto);
+        addFindByIdReference(userResponseDto, user.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
 
     @DeleteMapping("/{email}")
@@ -55,5 +83,26 @@ public class UserController {
     public ResponseEntity<Object> deleteUser(@PathVariable(name = "email") String email) {
         service.delete(email);
         return ResponseEntity.ok("User deleted successfully.");
+    }
+
+    private void addUserUpdateReference(UserResponseDto userResponseDto) {
+        userResponseDto.add(linkTo(methodOn(UserController.class)
+                .updateUser(userResponseDto.getEmail(), null))
+                .withRel("update-user")
+                .withType(HttpMethod.PUT.name()));
+    }
+
+    private void addUserDeleteReference(UserResponseDto userResponseDto) {
+        userResponseDto.add(linkTo(methodOn(UserController.class)
+                .deleteUser(userResponseDto.getEmail()))
+                .withRel("delete-user")
+                .withType(HttpMethod.DELETE.name()));
+    }
+
+    private void addFindByIdReference(UserResponseDto userResponseDto, UUID uuid) {
+        userResponseDto.add(linkTo(methodOn(UserController.class)
+                .findUserById(uuid))
+                .withSelfRel()
+                .withType(HttpMethod.GET.name()));
     }
 }

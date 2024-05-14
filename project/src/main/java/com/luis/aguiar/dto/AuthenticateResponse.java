@@ -10,5 +10,5 @@ import lombok.*;
 @Builder
 public class AuthenticateResponse {
     @NotBlank
-    String token;
+    private String token;
 }
