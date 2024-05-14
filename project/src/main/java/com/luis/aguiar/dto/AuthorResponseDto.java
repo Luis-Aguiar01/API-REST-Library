@@ -1,14 +1,10 @@
 package com.luis.aguiar.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.luis.aguiar.models.Book;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor

@@ -47,7 +47,6 @@ public class SecurityConfig {
                         ex.authenticationEntryPoint(new ResourceExceptionHandler())
                 );
 
-
         return http.build();
     }
 }

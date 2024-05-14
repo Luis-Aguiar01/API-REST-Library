@@ -1,7 +1,6 @@
 package com.luis.aguiar.controllers;
 
-import com.luis.aguiar.dto.UserCreateDto;
-import com.luis.aguiar.dto.UserResponseDto;
+import com.luis.aguiar.dto.*;
 import com.luis.aguiar.mappers.UserMapper;
 import com.luis.aguiar.models.User;
 import com.luis.aguiar.services.UserService;
@@ -10,12 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("library/v1/users")

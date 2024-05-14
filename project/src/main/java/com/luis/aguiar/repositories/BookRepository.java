@@ -1,5 +1,6 @@
 package com.luis.aguiar.repositories;
 
+import com.luis.aguiar.enums.Status;
 import com.luis.aguiar.models.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +13,5 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
 
     List<Book> findByTitleContainingIgnoreCase(String name);
     List<Book> findByAuthorsFirstNameAndAuthorsLastName(String firstName, String lastName);
-    List<Book> findByStatus(Book.Status status);
+    List<Book> findByStatus(Status status);
 }

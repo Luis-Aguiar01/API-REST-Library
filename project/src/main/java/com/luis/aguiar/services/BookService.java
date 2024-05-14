@@ -1,16 +1,15 @@
 package com.luis.aguiar.services;
 
 import com.luis.aguiar.dto.BookResponseDto;
-import com.luis.aguiar.exceptions.EntityNotFoundException;
-import com.luis.aguiar.exceptions.UniqueDataViolationException;
+import com.luis.aguiar.enums.Status;
+import com.luis.aguiar.exceptions.*;
 import com.luis.aguiar.mappers.BookMapper;
 import com.luis.aguiar.models.Book;
 import com.luis.aguiar.repositories.BookRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class BookService {
@@ -37,40 +36,37 @@ public class BookService {
     @Transactional
     public List<BookResponseDto> getAll() {
         List<Book> books = repository.findAll();
-        List<BookResponseDto> booksDto = books.stream()
+        return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
-        return booksDto;
     }
 
     @Transactional
     public List<BookResponseDto> getAllByName(String name) {
         List<Book> books = repository.findByTitleContainingIgnoreCase(name);
-        List<BookResponseDto> booksDto = books.stream()
+        return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
-        return booksDto;
     }
 
     @Transactional
     public List<BookResponseDto> getAllByAuthor(String firstName, String lastName) {
         List<Book> books = repository.findByAuthorsFirstNameAndAuthorsLastName(firstName, lastName);
-        List<BookResponseDto> booksDto = books.stream()
+        return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
-        return booksDto;
     }
 
     @Transactional
-    public List<BookResponseDto> getAllByStatus(Book.Status status) {
+    public List<BookResponseDto> getAllByStatus(Status status) {
         List<Book> books = repository.findByStatus(status);
-        List<BookResponseDto> booksDto = books.stream()
+        return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
-        return booksDto;
     }
 
-    public Book update(UUID uuid, Book bookNewData) {
+    @Transactional
+    public BookResponseDto update(UUID uuid, Book bookNewData) {
         Book book = repository.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found."));
 
@@ -78,7 +74,7 @@ public class BookService {
         book.setPublicationDate(bookNewData.getPublicationDate());
         book.setStatus(bookNewData.getStatus());
 
-        return repository.save(book);
+        return BookMapper.toResponseDto(repository.save(book));
     }
 
     @Transactional

@@ -1,25 +1,17 @@
 package com.luis.aguiar.services;
 
-import com.luis.aguiar.dto.LoanRequestDto;
-import com.luis.aguiar.dto.LoanResponseDto;
+import com.luis.aguiar.dto.*;
 import com.luis.aguiar.enums.Status;
-import com.luis.aguiar.exceptions.BookNotAvailableException;
-import com.luis.aguiar.exceptions.EntityNotFoundException;
-import com.luis.aguiar.exceptions.LoanNotAvailableException;
+import com.luis.aguiar.exceptions.*;
 import com.luis.aguiar.mappers.LoanMapper;
-import com.luis.aguiar.models.Book;
-import com.luis.aguiar.models.Loan;
-import com.luis.aguiar.models.User;
-import com.luis.aguiar.repositories.BookRepository;
-import com.luis.aguiar.repositories.LoanRepository;
-import com.luis.aguiar.repositories.UserRepository;
+import com.luis.aguiar.models.*;
+import com.luis.aguiar.repositories.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class LoanService {

@@ -1,7 +1,6 @@
 package com.luis.aguiar.controllers;
 
-import com.luis.aguiar.dto.LoanRequestDto;
-import com.luis.aguiar.dto.LoanResponseDto;
+import com.luis.aguiar.dto.*;
 import com.luis.aguiar.services.LoanService;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
@@ -10,8 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("library/v1/loans")

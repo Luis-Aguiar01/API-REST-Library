@@ -1,20 +1,16 @@
 package com.luis.aguiar.controllers;
 
-import com.luis.aguiar.dto.BookCreateDto;
-import com.luis.aguiar.dto.BookResponseDto;
+import com.luis.aguiar.dto.*;
+import com.luis.aguiar.enums.Status;
 import com.luis.aguiar.mappers.BookMapper;
 import com.luis.aguiar.models.Book;
 import com.luis.aguiar.services.BookService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("library/v1/books")
@@ -56,7 +52,7 @@ public class BookController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<List<BookResponseDto>> findAllByStatus(@RequestParam Book.Status status) {
+    public ResponseEntity<List<BookResponseDto>> findAllByStatus(@RequestParam Status status) {
         List<BookResponseDto> books = service.getAllByStatus(status);
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
@@ -65,8 +61,8 @@ public class BookController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookResponseDto> updateBookData(@PathVariable(name = "id") UUID uuid,
                                                           @RequestBody @Valid BookCreateDto bookDto) {
-        Book book = service.update(uuid, BookMapper.toBook(bookDto));
-        return ResponseEntity.ok(BookMapper.toResponseDto(book));
+        BookResponseDto book = service.update(uuid, BookMapper.toBook(bookDto));
+        return ResponseEntity.ok(book);
     }
 
     @DeleteMapping("/{id}")

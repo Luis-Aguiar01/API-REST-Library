@@ -1,18 +1,15 @@
 package com.luis.aguiar.controllers;
 
-import com.luis.aguiar.dto.AuthorCreateDto;
-import com.luis.aguiar.dto.AuthorResponseDto;
+import com.luis.aguiar.dto.*;
 import com.luis.aguiar.mappers.AuthorMapper;
 import com.luis.aguiar.models.Author;
 import com.luis.aguiar.services.AuthorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("library/v1/authors")
@@ -45,8 +42,8 @@ public class AuthorController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthorResponseDto> updateAuthorData(@PathVariable(name = "id") UUID uuid,
                                                               @RequestBody @Valid AuthorCreateDto authorDto) {
-        Author author = service.update(uuid, AuthorMapper.toAuthor(authorDto));
-        return ResponseEntity.ok(AuthorMapper.toResponseDto(author));
+        AuthorResponseDto author = service.update(uuid, AuthorMapper.toAuthor(authorDto));
+        return ResponseEntity.ok(author);
     }
 
     @DeleteMapping("/{id}")

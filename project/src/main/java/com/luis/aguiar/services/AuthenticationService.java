@@ -1,15 +1,9 @@
 package com.luis.aguiar.services;
 
-import com.luis.aguiar.dto.AuthenticateRequest;
-import com.luis.aguiar.dto.AuthenticateResponse;
-import com.luis.aguiar.exceptions.UniqueDataViolationException;
-import com.luis.aguiar.models.User;
-import com.luis.aguiar.repositories.UserRepository;
+import com.luis.aguiar.dto.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service

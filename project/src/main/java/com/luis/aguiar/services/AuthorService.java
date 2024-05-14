@@ -3,23 +3,18 @@ package com.luis.aguiar.services;
 import com.luis.aguiar.dto.AuthorResponseDto;
 import com.luis.aguiar.exceptions.EntityNotFoundException;
 import com.luis.aguiar.mappers.AuthorMapper;
-import com.luis.aguiar.models.Author;
-import com.luis.aguiar.models.Book;
-import com.luis.aguiar.repositories.AuthorRepository;
-import com.luis.aguiar.repositories.BookRepository;
+import com.luis.aguiar.models.*;
+import com.luis.aguiar.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AuthorService {
 
     @Autowired
     private AuthorRepository authorRepository;
-
     @Autowired
     private BookRepository bookRepository;
 
@@ -30,10 +25,9 @@ public class AuthorService {
     @Transactional
     public List<AuthorResponseDto> findAll() {
         List<Author> authors = authorRepository.findAll();
-        List<AuthorResponseDto> authorsDto = authors.stream()
+        return authors.stream()
                 .map(AuthorMapper::toResponseDto)
                 .toList();
-        return authorsDto;
     }
 
     @Transactional
@@ -43,7 +37,8 @@ public class AuthorService {
         return AuthorMapper.toResponseDto(author);
     }
 
-    public Author update(UUID uuid, Author author) {
+    @Transactional
+    public AuthorResponseDto update(UUID uuid, Author author) {
         Author findAuthor = authorRepository.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("There is no author for this id."));
 
@@ -52,7 +47,7 @@ public class AuthorService {
         findAuthor.setFirstName(author.getFirstName());
         findAuthor.setLastName(author.getLastName());
 
-        return authorRepository.save(findAuthor);
+        return AuthorMapper.toResponseDto(authorRepository.save(findAuthor));
     }
 
     @Transactional
