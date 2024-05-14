@@ -7,7 +7,6 @@ import com.luis.aguiar.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,10 +53,7 @@ public class UserController {
                 .map(user -> {
                     UUID uuid = user.getId();
                     UserResponseDto userResponseDto = UserMapper.toResponseDto(user);
-
                     addFindByIdReference(userResponseDto, uuid);
-                    addUserDeleteReference(userResponseDto);
-                    addUserUpdateReference(userResponseDto);
 
                     return userResponseDto;
                 })

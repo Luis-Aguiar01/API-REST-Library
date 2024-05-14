@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/library/v1/authors").permitAll()
                         .requestMatchers(HttpMethod.POST,"/library/v1/users/authenticate").permitAll()
                         .requestMatchers(HttpMethod.POST,"/library/v1/loans").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/library/v1/authors/**").permitAll()
                         .anyRequest()
                         .authenticated()
                 )
