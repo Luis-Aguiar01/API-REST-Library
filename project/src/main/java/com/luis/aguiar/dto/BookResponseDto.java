@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.*;
 import com.luis.aguiar.enums.Status;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -11,7 +13,7 @@ import java.util.*;
 @AllArgsConstructor
 @Getter @Setter @ToString
 @JsonPropertyOrder( { "id", "title", "authors", "publicationDate", "status" } )
-public class BookResponseDto {
+public class BookResponseDto extends RepresentationModel<BookResponseDto> {
 
     @NotNull
     private UUID id;
@@ -26,5 +28,5 @@ public class BookResponseDto {
     private Status status;
 
     @JsonManagedReference
-    private Set<AuthorResponseDto> authors = Collections.emptySet();
+    private Set<Link> authors = Collections.emptySet();
 }

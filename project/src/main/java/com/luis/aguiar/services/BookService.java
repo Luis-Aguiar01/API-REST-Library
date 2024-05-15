@@ -50,8 +50,8 @@ public class BookService {
     }
 
     @Transactional
-    public List<BookResponseDto> getAllByAuthor(String firstName, String lastName) {
-        List<Book> books = repository.findByAuthorsFirstNameAndAuthorsLastName(firstName, lastName);
+    public List<BookResponseDto> getAllByAuthor(String lastName) {
+        List<Book> books = repository.findByAuthorsLastNameContainingIgnoreCase(lastName);
         return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
