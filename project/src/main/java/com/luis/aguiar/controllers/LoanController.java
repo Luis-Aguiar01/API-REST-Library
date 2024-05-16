@@ -1,8 +1,14 @@
 package com.luis.aguiar.controllers;
 
 import com.luis.aguiar.dto.*;
+import com.luis.aguiar.exceptions.ErrorModel;
 import com.luis.aguiar.exceptions.UnauthorizedException;
 import com.luis.aguiar.services.LoanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +24,37 @@ import java.util.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Tag(name = "Loans", description = "Fornece as operações relacionadas aos empréstimos de livros.")
 @RestController
 @RequestMapping("library/v1/loans")
 public class LoanController {
     @Autowired
     private LoanService loanService;
 
+    @Operation(summary = "Cria um novo empréstimo.", responses = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Empréstimo criado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoanResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Livro indisponível.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            )
+    })
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<LoanResponseDto> createNewLoan(@RequestBody @Valid LoanRequestDto loanRequest,
@@ -38,6 +69,36 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(loan);
     }
 
+    @Operation(summary = "Encontra um empréstimo pelo ID.", responses = {
+            @ApiResponse(
+                    responseCode = "302",
+                    description = "Empréstimo encontrado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoanResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "ID com formato inválido passado para a requisição.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Empréstimo não encontrado.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            )
+    })
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<LoanResponseDto> findLoanById(@PathVariable(name = "id") UUID id) {
@@ -45,6 +106,30 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.FOUND).body(loan);
     }
 
+    @Operation(summary = "Encontra empréstimos pelo status.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Empréstimo encontrado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoanResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados inválidos enviados no corpo da requisição.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            )
+    })
     @GetMapping("/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<LoanResponseDto>> findByActive(@RequestParam boolean status,
@@ -54,6 +139,31 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(loan);
     }
 
+
+    @Operation(summary = "Encontra empréstimos associados ao e-mail do usuário.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Empréstimo encontrado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoanResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados inválidos enviados no corpo da requisição.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            )
+    })
     @GetMapping("/user/{email}")
     @PreAuthorize("hasAnyRole('ADMIN','USER') AND #email == authentication.principal.username")
     public ResponseEntity<List<LoanResponseDto>> findLoanByUser(@PathVariable(name = "email") String email,
@@ -63,6 +173,32 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(loans);
     }
 
+
+    @Operation(summary = "Encontra empréstimos associados ao e-mail do usuário e status do empréstimo.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Empréstimo encontrado com sucesso.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = LoanResponseDto.class))
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Erro interno do servidor.",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Dados inválidos enviados no corpo da requisição.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                )
+    })
     @GetMapping("/user/{email}/{status}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER') AND #email == authentication.principal.username")
     public ResponseEntity<List<LoanResponseDto>> findByUserAndStatus(@PathVariable(name = "email") String email,
@@ -73,6 +209,43 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(loans);
     }
 
+
+    @Operation(summary = "Devolve um empréstimo ativo.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Empréstimo devolvido com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoanResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados inválidos enviados no corpo da requisição.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Empréstimo não encontrado.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Empréstimo inativo.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            )
+    })
     @PostMapping("/return/{email}/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER') AND #email == authentication.principal.username")
     public ResponseEntity<Void> returnLoan(@PathVariable(name = "id") UUID id,
