@@ -51,7 +51,7 @@ public class ResourceExceptionHandler implements AuthenticationEntryPoint {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorModel> methodArgumentNotValidException(MethodArgumentTypeMismatchException ex,
                                                                       HttpServletRequest request) {
-        var exception = configNewExceptionData(ex, request, "Invalid UUID format.", HttpStatus.BAD_REQUEST);
+        var exception = configNewExceptionData(ex, request, "Invalid data format.", HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception);
     }
 

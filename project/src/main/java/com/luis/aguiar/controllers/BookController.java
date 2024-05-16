@@ -42,8 +42,8 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookResponseDto>> findAllBooks() {
-        List<BookResponseDto> books = service.getAll();
+    public ResponseEntity<List<BookResponseDto>> findAllBooks(@RequestParam int page, @RequestParam int quantity) {
+        List<BookResponseDto> books = service.getAll(page, quantity);
 
         books.forEach(BookController::addFindByIdReference);
 
@@ -51,27 +51,30 @@ public class BookController {
     }
 
     @GetMapping("/name")
-    public ResponseEntity<List<BookResponseDto>> findAllByBookName(@RequestParam String name) {
-        List<BookResponseDto> books = service.getAllByName(name);
-
+    public ResponseEntity<List<BookResponseDto>> findAllByBookName(@RequestParam String name,
+                                                                   @RequestParam int page,
+                                                                   @RequestParam int quantity) {
+        List<BookResponseDto> books = service.getAllByName(name, page, quantity);
         books.forEach(BookController::addFindByIdReference);
 
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
     @GetMapping("/author")
-    public ResponseEntity<List<BookResponseDto>> findAllByAuthorLastName(@RequestParam String lastName) {
-        List<BookResponseDto> books = service.getAllByAuthor(lastName);
-
+    public ResponseEntity<List<BookResponseDto>> findAllByAuthorLastName(@RequestParam String lastName,
+                                                                         @RequestParam int page,
+                                                                         @RequestParam int quantity) {
+        List<BookResponseDto> books = service.getAllByAuthor(lastName, page, quantity);
         books.forEach(BookController::addFindByIdReference);
 
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
     @GetMapping("/status")
-    public ResponseEntity<List<BookResponseDto>> findAllByStatus(@RequestParam Status status) {
-        List<BookResponseDto> books = service.getAllByStatus(status);
-
+    public ResponseEntity<List<BookResponseDto>> findAllByStatus(@RequestParam Status status,
+                                                                 @RequestParam int page,
+                                                                 @RequestParam int quantity) {
+        List<BookResponseDto> books = service.getAllByStatus(status, page, quantity);
         books.forEach(BookController::addFindByIdReference);
 
         return ResponseEntity.status(HttpStatus.OK).body(books);
@@ -98,28 +101,28 @@ public class BookController {
 
     private static void addFindAllByBookNameReference(BookResponseDto bookResponseDto) {
         bookResponseDto.add(linkTo(methodOn(BookController.class)
-                .findAllByBookName("Harry Potter"))
+                .findAllByBookName("Harry Potter", 1, 2))
                 .withRel("find-all-by-book-name")
                 .withType(HttpMethod.GET.name()));
     }
 
     private static void addFindAllByStatusReference(BookResponseDto bookResponseDto) {
         bookResponseDto.add(linkTo(methodOn(BookController.class)
-                .findAllByStatus(Status.AVAILABLE))
+                .findAllByStatus(Status.AVAILABLE, 0, 1))
                 .withRel("find-all-by-status")
                 .withType(HttpMethod.GET.name()));
     }
 
     private static void addFindAllByAuthorLastNameReference(BookResponseDto bookResponseDto) {
         bookResponseDto.add(linkTo(methodOn(BookController.class)
-                .findAllByAuthorLastName("Tolkien"))
+                .findAllByAuthorLastName("Tolkien", 0, 1))
                 .withRel("find-by-author-lastName")
                 .withType(HttpMethod.GET.name()));
     }
 
     private static void addFindAllBooksReference(BookResponseDto bookResponseDto) {
         bookResponseDto.add(linkTo(methodOn(BookController.class)
-                .findAllBooks())
+                .findAllBooks(1, 2))
                 .withRel("find-all")
                 .withType(HttpMethod.GET.name()));
     }

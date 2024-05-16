@@ -9,6 +9,7 @@ import com.luis.aguiar.repositories.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
@@ -65,8 +66,8 @@ public class LoanService {
     }
 
     @Transactional
-    public List<LoanResponseDto> findByStatus(Boolean status) {
-        List<Loan> loans = loanRepository.findByActive(status);
+    public List<LoanResponseDto> findByStatus(boolean status, int page, int quantity) {
+        List<Loan> loans = loanRepository.findByActive(status, PageRequest.of(page, quantity));
 
         return loans.stream()
                 .map(LoanMapper::toResponseDto)
@@ -74,8 +75,8 @@ public class LoanService {
     }
 
     @Transactional
-    public List<LoanResponseDto> findByUserEmail(String email) {
-        List<Loan> loans = loanRepository.findByUserEmail(email);
+    public List<LoanResponseDto> findByUserEmail(String email, int page, int quantity) {
+        List<Loan> loans = loanRepository.findByUserEmail(email, PageRequest.of(page, quantity));
 
         return loans.stream()
                 .map(LoanMapper::toResponseDto)
@@ -83,8 +84,8 @@ public class LoanService {
     }
 
     @Transactional
-    public List<LoanResponseDto> findByUserAndActive(String email, Boolean status) {
-        List<Loan> loans = loanRepository.findByUserEmailAndActive(email, status);
+    public List<LoanResponseDto> findByUserAndActive(String email, boolean status, int page, int quantity) {
+        List<Loan> loans = loanRepository.findByUserEmailAndActive(email, status, PageRequest.of(page, quantity));
 
         return loans.stream()
                 .map(LoanMapper::toResponseDto)

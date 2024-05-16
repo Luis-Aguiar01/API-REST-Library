@@ -7,6 +7,7 @@ import com.luis.aguiar.enums.Role;
 import com.luis.aguiar.models.User;
 import com.luis.aguiar.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -44,8 +45,8 @@ public class UserService {
         );
     }
 
-    public List<User> findAll() {
-        return repository.findAll();
+    public List<User> findAll(int page, int quantity) {
+        return repository.findAll(PageRequest.of(page, quantity)).getContent();
     }
 
     public User update(String email, User newDataUser) {

@@ -7,6 +7,7 @@ import com.luis.aguiar.models.*;
 import com.luis.aguiar.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -23,8 +24,8 @@ public class AuthorService {
     }
 
     @Transactional
-    public List<AuthorResponseDto> findAll() {
-        List<Author> authors = authorRepository.findAll();
+    public List<AuthorResponseDto> findAll(int page, int quantity) {
+        List<Author> authors = authorRepository.findAll(PageRequest.of(page, quantity)).getContent();
         return authors.stream()
                 .map(AuthorMapper::toResponseDto)
                 .toList();

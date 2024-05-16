@@ -47,23 +47,29 @@ public class LoanController {
 
     @GetMapping("/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<LoanResponseDto>> findByActive(@PathParam(value = "status") Boolean status) {
-        List<LoanResponseDto> loan = loanService.findByStatus(status);
+    public ResponseEntity<List<LoanResponseDto>> findByActive(@RequestParam boolean status,
+                                                              @RequestParam int page,
+                                                              @RequestParam int quantity) {
+        List<LoanResponseDto> loan = loanService.findByStatus(status, page, quantity);
         return ResponseEntity.status(HttpStatus.OK).body(loan);
     }
 
     @GetMapping("/user/{email}")
     @PreAuthorize("hasAnyRole('ADMIN','USER') AND #email == authentication.principal.username")
-    public ResponseEntity<List<LoanResponseDto>> findLoanByUser(@PathVariable(name = "email") String email) {
-        List<LoanResponseDto> loans = loanService.findByUserEmail(email);
+    public ResponseEntity<List<LoanResponseDto>> findLoanByUser(@PathVariable(name = "email") String email,
+                                                                @RequestParam int page,
+                                                                @RequestParam int quantity) {
+        List<LoanResponseDto> loans = loanService.findByUserEmail(email, page, quantity);
         return ResponseEntity.status(HttpStatus.OK).body(loans);
     }
 
     @GetMapping("/user/{email}/{status}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER') AND #email == authentication.principal.username")
     public ResponseEntity<List<LoanResponseDto>> findByUserAndStatus(@PathVariable(name = "email") String email,
-                                                                     @PathVariable(name = "status") Boolean status) {
-        List<LoanResponseDto> loans = loanService.findByUserAndActive(email, status);
+                                                                     @PathVariable(name = "status") boolean status,
+                                                                     @RequestParam int page,
+                                                                     @RequestParam int quantity) {
+        List<LoanResponseDto> loans = loanService.findByUserAndActive(email, status, page, quantity);
         return ResponseEntity.status(HttpStatus.OK).body(loans);
     }
 
@@ -84,21 +90,21 @@ public class LoanController {
 
     private static void addFindByUserAndStatusReference(LoanResponseDto loan) {
         loan.add(linkTo(methodOn(LoanController.class)
-                .findByUserAndStatus(loan.getUser().getEmail(), true))
+                .findByUserAndStatus(loan.getUser().getEmail(), true, 0, 1))
                 .withRel("find-by-user-and-active")
                 .withType(HttpMethod.GET.name()));
     }
 
     private static void addFindLoanByUserReference(LoanResponseDto loan) {
         loan.add(linkTo(methodOn(LoanController.class)
-                .findLoanByUser(loan.getUser().getEmail()))
+                .findLoanByUser(loan.getUser().getEmail(),1 ,1))
                 .withRel("find-by-user")
                 .withType(HttpMethod.GET.name()));
     }
 
     private static void addFinByActiveReference(LoanResponseDto loan) {
         loan.add(linkTo(methodOn(LoanController.class)
-                .findByActive(true))
+                .findByActive(true, 0, 1))
                 .withRel("find-by-active")
                 .withType(HttpMethod.GET.name()));
     }

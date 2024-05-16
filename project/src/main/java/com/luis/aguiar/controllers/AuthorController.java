@@ -34,8 +34,9 @@ public class AuthorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AuthorResponseDto>> findAllAuthors() {
-        List<AuthorResponseDto> authors = service.findAll();
+    public ResponseEntity<List<AuthorResponseDto>> findAllAuthors(@RequestParam int page,
+                                                                  @RequestParam int quantity) {
+        List<AuthorResponseDto> authors = service.findAll(page, quantity);
 
         authors.forEach(author -> {
             addFindByIdReference(author, author.getId());

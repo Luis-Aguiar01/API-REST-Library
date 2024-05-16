@@ -8,6 +8,8 @@ import com.luis.aguiar.models.Book;
 import com.luis.aguiar.repositories.BookRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -34,32 +36,32 @@ public class BookService {
     }
 
     @Transactional
-    public List<BookResponseDto> getAll() {
-        List<Book> books = repository.findAll();
+    public List<BookResponseDto> getAll(int page, int quantity) {
+        List<Book> books = repository.findAll(PageRequest.of(page, quantity)).getContent();
         return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
     }
 
     @Transactional
-    public List<BookResponseDto> getAllByName(String name) {
-        List<Book> books = repository.findByTitleContainingIgnoreCase(name);
+    public List<BookResponseDto> getAllByName(String name, int page, int quantity) {
+        List<Book> books = repository.findByTitleContainingIgnoreCase(name, PageRequest.of(page, quantity));
         return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
     }
 
     @Transactional
-    public List<BookResponseDto> getAllByAuthor(String lastName) {
-        List<Book> books = repository.findByAuthorsLastNameContainingIgnoreCase(lastName);
+    public List<BookResponseDto> getAllByAuthor(String lastName, int page, int quantity) {
+        List<Book> books = repository.findByAuthorsLastNameContainingIgnoreCase(lastName, PageRequest.of(page, quantity));
         return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();
     }
 
     @Transactional
-    public List<BookResponseDto> getAllByStatus(Status status) {
-        List<Book> books = repository.findByStatus(status);
+    public List<BookResponseDto> getAllByStatus(Status status, int page, int quantity) {
+        List<Book> books = repository.findByStatus(status, PageRequest.of(page, quantity));
         return books.stream()
                 .map(BookMapper::toResponseDto)
                 .toList();

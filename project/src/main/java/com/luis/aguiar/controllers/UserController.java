@@ -47,8 +47,8 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponseDto>> findAllUsers() {
-        List<User> users = service.findAll();
+    public ResponseEntity<List<UserResponseDto>> findAllUsers(@RequestParam int page, @RequestParam int quantity) {
+        List<User> users = service.findAll(page, quantity);
         List<UserResponseDto> usersDto = users.stream()
                 .map(user -> {
                     UUID uuid = user.getId();
