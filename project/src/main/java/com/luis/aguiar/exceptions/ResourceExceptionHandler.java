@@ -19,6 +19,13 @@ public class ResourceExceptionHandler implements AuthenticationEntryPoint {
         var exception = configNewExceptionData(ex, request, "Unique data violation.", HttpStatus.CONFLICT);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exception);
     }
+    
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorModel> unauthorizedException(UnauthorizedException ex,
+                                                            HttpServletRequest request) {
+        var exception = configNewExceptionData(ex, request, "Unauthorized.", HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception);
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorModel> entityNotFoundException(EntityNotFoundException ex,

@@ -48,12 +48,12 @@ public class LoanService {
                 .returnDate(todayPlusSevenDays)
                 .active(true)
                 .build();
-        loanRepository.save(loan);
+        Loan savedLoan = loanRepository.save(loan);
 
         book.setStatus(Status.UNAVAILABLE);
         user.setHasBookOnLoan(false);
 
-        return LoanMapper.toResponseDto(loan);
+        return LoanMapper.toResponseDto(savedLoan);
     }
 
     @Transactional

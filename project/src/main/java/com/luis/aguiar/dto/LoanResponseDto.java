@@ -1,18 +1,27 @@
 package com.luis.aguiar.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import java.time.LocalDate;
+import org.springframework.hateoas.RepresentationModel;
 
-@Data
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoanResponseDto {
+public class LoanResponseDto extends RepresentationModel<LoanResponseDto> {
+    @NotNull
+    private UUID id;
+
     @NotNull
     private BookResponseDto book;
 
     @NotNull
+    @JsonIgnore
     private UserResponseDto user;
 
     @NotNull
