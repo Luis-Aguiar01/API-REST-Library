@@ -14,6 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -39,6 +41,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/library/v1/users/authenticate").permitAll()
                         .requestMatchers(HttpMethod.POST,"/library/v1/loans").permitAll()
                         .requestMatchers(HttpMethod.GET,"/library/v1/authors/**").permitAll()
+                        .requestMatchers(
+                                antMatcher("/docs-library.html"),
+                                antMatcher("/docs-library/**"),
+                                antMatcher("/swagger-ui.html"),
+                                antMatcher("/swagger-ui/**"),
+                                antMatcher("/webjars/**")
+                        ).permitAll()
                         .anyRequest()
                         .authenticated()
                 )
