@@ -2,9 +2,15 @@ package com.luis.aguiar.controllers;
 
 import com.luis.aguiar.dto.*;
 import com.luis.aguiar.enums.Status;
+import com.luis.aguiar.exceptions.ErrorModel;
 import com.luis.aguiar.mappers.BookMapper;
 import com.luis.aguiar.models.Book;
 import com.luis.aguiar.services.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -13,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+@Tag(name = "Books", description = "Operações realizadas nos livros da API.")
 @RestController
 @RequestMapping("library/v1/books")
 public class BookController {
@@ -20,6 +27,24 @@ public class BookController {
     @Autowired
     private BookService service;
 
+    @Operation(summary = "Cria um novo livro.", responses = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Livro criado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BookResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                    content = @Content
+            )
+    })
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookResponseDto> createBook(@RequestBody @Valid BookCreateDto bookCreateDto) {
@@ -31,6 +56,30 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookResponseDto);
     }
 
+    @Operation(summary = "Encontra um livro cadastrado na API pelo ID.", responses = {
+            @ApiResponse(
+                    responseCode = "302",
+                    description = "Livro encontrado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BookResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato inválido para os dados da requisição",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            )
+    })
     @GetMapping("/{id}")
     public ResponseEntity<BookResponseDto> findBookById(@PathVariable(name = "id") UUID uuid) {
         BookResponseDto book = service.findById(uuid);
@@ -41,15 +90,55 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.FOUND).body(book);
     }
 
-    @GetMapping
-    public ResponseEntity<List<BookResponseDto>> findAllBooks(@RequestParam int page, @RequestParam int quantity) {
-        List<BookResponseDto> books = service.getAll(page, quantity);
 
+    @Operation(summary = "Recebe uma lista de todos os livros cadastrados.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Recurso retornado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BookResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato inválido para os dados da requisição.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            )
+    })
+    @GetMapping
+    public ResponseEntity<List<BookResponseDto>> findAllBooks(@RequestParam int page,
+                                                              @RequestParam int quantity) {
+        List<BookResponseDto> books = service.getAll(page, quantity);
         books.forEach(BookController::addFindByIdReference);
 
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
+    @Operation(summary = "Encontra e retorna livros que condizem com o nome passado para a requisição.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Recurso retornado com sucesso.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = BookResponseDto.class))
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Erro interno do servidor.",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Formato inválido para os dados da requisição.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                )
+    })
     @GetMapping("/name")
     public ResponseEntity<List<BookResponseDto>> findAllByBookName(@RequestParam String name,
                                                                    @RequestParam int page,
@@ -60,6 +149,26 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
+    @Operation(summary = "Encontra e retorna livros que condizem com o sobrenome do autor passado para a requisição.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Recurso retornado com sucesso.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = BookResponseDto.class))
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Erro interno do servidor.",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Formato inválido para os dados da requisição.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                )
+    })
     @GetMapping("/author")
     public ResponseEntity<List<BookResponseDto>> findAllByAuthorLastName(@RequestParam String lastName,
                                                                          @RequestParam int page,
@@ -70,6 +179,26 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
+    @Operation(summary = "Encontra e retorna livros que condizem com o status do livro passado para a requisição.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Recurso retornado com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = BookResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Erro interno do servidor.",
+                            content = @Content
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Formato inválido para os dados da requisição.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorModel.class))
+                    )
+            })
     @GetMapping("/status")
     public ResponseEntity<List<BookResponseDto>> findAllByStatus(@RequestParam Status status,
                                                                  @RequestParam int page,
@@ -80,6 +209,36 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
+    @Operation(summary = "Atualiza as informações de um livro.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Dados atualizados com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BookResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Livro não encontrado.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato inválido para o ID",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem acesso a operação ou dados inválidos fornecidos.",
+                    content = @Content
+            ),
+    })
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookResponseDto> updateBookData(@PathVariable(name = "id") UUID uuid,
@@ -92,6 +251,36 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
+    @Operation(summary = "Deleta um livro.", responses = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Livro deletado com sucesso.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erro interno do servidor.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Livro não encontrado.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato inválido para o ID",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Usuário não autenticado, sem acesso a operação ou dados fornecidos inválidos.",
+                    content = @Content
+            ),
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> deleteBook(@PathVariable(name = "id") UUID uuid) {
