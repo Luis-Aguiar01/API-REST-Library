@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +28,25 @@ public class BookController {
     @Autowired
     private BookService service;
 
-    @Operation(summary = "Cria um novo livro.", responses = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Livro criado com sucesso.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BookResponseDto.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Erro interno do servidor.",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
-                    content = @Content
-            )
+    @Operation(summary = "Cria um novo livro.",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "Livro criado com sucesso.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = BookResponseDto.class))
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Erro interno do servidor.",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Usuário não autenticado, sem permissão ou dados inválidos fornecidos.",
+                        content = @Content
+                )
     })
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -209,35 +212,37 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
-    @Operation(summary = "Atualiza as informações de um livro.", responses = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Dados atualizados com sucesso.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BookResponseDto.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Erro interno do servidor.",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Livro não encontrado.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorModel.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Formato inválido para o ID",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorModel.class))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Usuário não autenticado, sem acesso a operação ou dados inválidos fornecidos.",
-                    content = @Content
-            ),
+    @Operation(summary = "Atualiza as informações de um livro.",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Dados atualizados com sucesso.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = BookResponseDto.class))
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Erro interno do servidor.",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Livro não encontrado.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Formato inválido para o ID",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Usuário não autenticado, sem acesso a operação ou dados inválidos fornecidos.",
+                        content = @Content
+                ),
     })
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -251,35 +256,37 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
-    @Operation(summary = "Deleta um livro.", responses = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Livro deletado com sucesso.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Erro interno do servidor.",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Livro não encontrado.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorModel.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Formato inválido para o ID",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorModel.class))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Usuário não autenticado, sem acesso a operação ou dados fornecidos inválidos.",
-                    content = @Content
-            ),
+    @Operation(summary = "Deleta um livro.",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Livro deletado com sucesso.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = String.class))
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "Erro interno do servidor.",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Livro não encontrado.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Formato inválido para o ID",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Usuário não autenticado, sem acesso a operação ou dados fornecidos inválidos.",
+                        content = @Content
+                ),
     })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
