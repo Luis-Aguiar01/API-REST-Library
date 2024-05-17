@@ -1,6 +1,5 @@
 package com.luis.aguiar.models;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.luis.aguiar.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -10,11 +9,10 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Table(name = "Books")
+@Table(name = "books")
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter @ToString
 @EqualsAndHashCode(of = "id")
-@JsonPropertyOrder({ "id, title, author, publicationDate, status" })
 public class Book {
 
     @Id
@@ -22,7 +20,7 @@ public class Book {
     private UUID id;
 
     @NotBlank
-    @Column(name = "title", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String title;
 
     @ManyToMany
@@ -31,14 +29,17 @@ public class Book {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
-    private Set<Author> authors = Collections.emptySet();
+    private Set<Author> authors = new HashSet<>();
+
+    @OneToMany(mappedBy = "book")
+    private Set<Loan> loans = new HashSet<>();
 
     @NotNull
-    @Column(name = "publication_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate publicationDate;
 
     @NotNull
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 }

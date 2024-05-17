@@ -1,25 +1,20 @@
 package com.luis.aguiar.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Authors")
+@Table(name = "authors")
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter @ToString
 @EqualsAndHashCode(of = "id")
-@JsonPropertyOrder( { "id", "firstName", "lastName", "birthDate", "nationality" } )
 public class Author {
 
     @Id
@@ -27,21 +22,21 @@ public class Author {
     private UUID id;
 
     @NotBlank
-    @Column(name = "first_name", nullable = false)
+    @Column(nullable = false)
     private String firstName;
 
     @NotBlank
-    @Column(name = "last_name", nullable = false)
+    @Column(nullable = false)
     private String lastName;
 
     @NotNull
-    @Column(name = "birth_date")
+    @Column(nullable = false)
     private LocalDate birthDate;
 
     @NotBlank
-    @Column(name = "nationality")
+    @Column(nullable = false)
     private String nationality;
 
     @ManyToMany(mappedBy = "authors")
-    private Set<Book> books = Collections.emptySet();
+    private Set<Book> books = new HashSet<>();
 }

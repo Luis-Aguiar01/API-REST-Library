@@ -10,9 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -27,31 +25,34 @@ public class User implements UserDetails {
     private UUID id;
 
     @NotBlank
-    @Column(name = "first_name", nullable = false)
+    @Column(nullable = false)
     private String firstName;
 
     @NotBlank
-    @Column(name = "last_name", nullable = false)
+    @Column(nullable = false)
     private String lastName;
 
     @NotBlank
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @NotBlank
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
 
     @NotNull
-    @Column(name = "birth_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "has_book_on_loan", nullable = false)
+    @Column(nullable = false)
     private Boolean hasBookOnLoan = true;
 
-    @Column(name = "role", nullable = false)
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Loan> loans = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

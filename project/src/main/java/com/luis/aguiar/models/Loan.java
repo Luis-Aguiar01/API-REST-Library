@@ -1,20 +1,17 @@
 package com.luis.aguiar.models;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Loans")
+@Table(name = "loans")
 @NoArgsConstructor @AllArgsConstructor
 @Setter @Getter @ToString
 @Builder
 @EqualsAndHashCode(of = "id")
-@JsonPropertyOrder( { "id", "book", "user", "loanDate", "returnDate", "isActive" } )
 public class Loan {
 
     @Id
@@ -22,11 +19,11 @@ public class Loan {
     private UUID id;
 
     @NotNull
-    @OneToOne
+    @ManyToOne
     private Book book;
 
     @NotNull
-    @OneToOne
+    @ManyToOne
     private User user;
 
     @NotNull

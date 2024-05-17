@@ -29,5 +29,5 @@ public class AuthorResponseDto extends RepresentationModel<AuthorResponseDto> {
     private String nationality;
 
     @JsonBackReference
-    private Set<BookResponseDto> books = Collections.emptySet();
+    private Set<BookResponseDto> books = new HashSet<>();
 }

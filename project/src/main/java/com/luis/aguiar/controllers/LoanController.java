@@ -3,6 +3,7 @@ package com.luis.aguiar.controllers;
 import com.luis.aguiar.dto.*;
 import com.luis.aguiar.exceptions.ErrorModel;
 import com.luis.aguiar.exceptions.UnauthorizedException;
+import com.luis.aguiar.models.User;
 import com.luis.aguiar.services.LoanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -69,7 +68,7 @@ public class LoanController {
         LoanResponseDto loan = loanService.saveLoan(loanRequest);
         addAllReferences(loan);
 
-        return ResponseEntity.status(HttpStatus.OK).body(loan);
+        return ResponseEntity.status(HttpStatus.CREATED).body(loan);
     }
 
     @Operation(summary = "Encontra um empréstimo pelo ID.",
@@ -258,17 +257,21 @@ public class LoanController {
                                 schema = @Schema(implementation = ErrorModel.class))
                 )
     })
-    @PostMapping("/return/{email}/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER') AND #email == authentication.principal.username")
-    public ResponseEntity<Void> returnLoan(@PathVariable(name = "id") UUID id,
-                                           @PathVariable(name = "email") String email) {
-        loanService.returnLoan(id);
+    @PostMapping("/return/{email}/{loan_id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<Void> returnLoan(@PathVariable(name = "loan_id") UUID id,
+                                           @PathVariable(name = "email") String email,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
+        if (!email.equals(userDetails.getUsername())) {
+            throw new UnauthorizedException("You do not have permission to access this profile.");
+        }
+        loanService.returnLoan(id, email);
         return ResponseEntity.ok().build();
     }
 
     private static void addReturnLoanReference(LoanResponseDto loan) {
         loan.add(linkTo(methodOn(LoanController.class)
-                .returnLoan(loan.getId(), null))
+                .returnLoan(loan.getId(), "joao@gmail.com", new User()))
                 .withRel("return-loan")
                 .withType(HttpMethod.POST.name()));
     }

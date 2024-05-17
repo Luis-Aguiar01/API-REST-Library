@@ -93,9 +93,11 @@ public class LoanService {
     }
 
     @Transactional
-    public void returnLoan(UUID id) {
-        Loan loan = loanRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No loan with this ID could be found."));
+    public void returnLoan(UUID id, String email) {
+        Loan loan = loanRepository.findByIdAndUserEmail(id, email)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("No loans with this ID can be found associated with this email.")
+                );
 
         if (!loan.getActive()) {
             throw new LoanNotAvailableException("The loan has already been returned.");

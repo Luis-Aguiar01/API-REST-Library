@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
-
 import java.time.LocalDate;
 
 @NoArgsConstructor

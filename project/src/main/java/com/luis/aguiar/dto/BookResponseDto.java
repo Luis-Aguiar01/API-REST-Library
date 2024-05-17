@@ -28,5 +28,5 @@ public class BookResponseDto extends RepresentationModel<BookResponseDto> {
     private Status status;
 
     @JsonManagedReference
-    private Set<Link> authors = Collections.emptySet();
+    private Set<Link> authors = new HashSet<>();
 }

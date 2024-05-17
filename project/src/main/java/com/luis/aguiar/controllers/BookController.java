@@ -38,6 +38,12 @@ public class BookController {
                                 schema = @Schema(implementation = BookResponseDto.class))
                 ),
                 @ApiResponse(
+                        responseCode = "409",
+                        description = "Livro já cadastrado no sistema.",
+                        content = @Content(mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorModel.class))
+                ),
+                @ApiResponse(
                         responseCode = "500",
                         description = "Erro interno do servidor.",
                         content = @Content
@@ -61,7 +67,7 @@ public class BookController {
 
     @Operation(summary = "Encontra um livro cadastrado na API pelo ID.", responses = {
             @ApiResponse(
-                    responseCode = "302",
+                    responseCode = "200",
                     description = "Livro encontrado com sucesso.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = BookResponseDto.class))
@@ -81,7 +87,13 @@ public class BookController {
                     description = "Formato inválido para os dados da requisição",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorModel.class))
-            )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Livro não encontrado.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorModel.class))
+            ),
     })
     @GetMapping("/{id}")
     public ResponseEntity<BookResponseDto> findBookById(@PathVariable(name = "id") UUID uuid) {
@@ -90,7 +102,7 @@ public class BookController {
         addDeleteBookReference(book);
         addUpdateBookDataReference(book, book.getId());
 
-        return ResponseEntity.status(HttpStatus.FOUND).body(book);
+        return ResponseEntity.status(HttpStatus.OK).body(book);
     }
 
 

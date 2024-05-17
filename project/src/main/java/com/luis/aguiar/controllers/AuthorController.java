@@ -97,7 +97,7 @@ public class AuthorController {
 
     @Operation(summary = "Encontra um autor pelo ID e exibe os seus dados.", responses = {
             @ApiResponse(
-                    responseCode = "302",
+                    responseCode = "200",
                     description = "Recurso encontrado e retornado com sucesso.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = AuthorResponseDto.class))
@@ -128,7 +128,7 @@ public class AuthorController {
         addUpdateAuthorReference(author, author.getId());
         addAssociateAuthorWithBookReference(author, author.getId());
 
-        return ResponseEntity.status(HttpStatus.FOUND).body(author);
+        return ResponseEntity.status(HttpStatus.OK).body(author);
     }
 
     @Operation(summary = "Atualiza as informações de um autor.",

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
-
 import java.time.LocalDate;
 import java.util.UUID;
 

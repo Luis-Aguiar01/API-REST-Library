@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter @ToString
-@JsonPropertyOrder( { "title", "publicationDate", "status" } )
 public class BookCreateDto {
 
     @NotBlank
