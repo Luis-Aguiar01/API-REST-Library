@@ -9,7 +9,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class LoanRequestDto {
     @NotNull
-    private UUID id;
+    private UUID book_id;
 
     @NotNull
     private String email;

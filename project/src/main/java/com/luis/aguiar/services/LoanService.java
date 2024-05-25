@@ -25,7 +25,7 @@ public class LoanService {
 
     @Transactional
     public LoanResponseDto saveLoan(@Valid LoanRequestDto loanRequest) {
-        Book book = bookRepository.findById(loanRequest.getId())
+        Book book = bookRepository.findById(loanRequest.getBook_id())
                 .orElseThrow(() -> new EntityNotFoundException("No books with this ID could be found."));
 
         if (book.getStatus() == Status.UNAVAILABLE) {
