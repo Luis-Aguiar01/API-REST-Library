@@ -1,7 +1,6 @@
 package com.luis.aguiar.mappers;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
 import com.luis.aguiar.controllers.AuthorController;
 import com.luis.aguiar.dto.AuthorResponseDto;
 import com.luis.aguiar.dto.BookCreateDto;
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpMethod;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,6 +20,9 @@ public class BookMapper {
     private static final ModelMapper mapper = new ModelMapper();
 
     public static BookResponseDto toResponseDto(Book book) {
+        if (book == null) {
+            throw new IllegalArgumentException("The book can't be null.");
+        }
         BookResponseDto dto = new BookResponseDto();
         dto.setTitle(book.getTitle());
         dto.setPublicationDate(book.getPublicationDate());
@@ -38,14 +39,23 @@ public class BookMapper {
     }
 
     public static Book toBook(BookResponseDto bookDto) {
+        if (bookDto == null) {
+            throw new IllegalArgumentException("The BookResponseDto can't be null.");
+        }
         return mapper.map(bookDto, Book.class);
     }
 
     public static Book toBook(BookCreateDto bookDto) {
+        if (bookDto == null) {
+            throw new IllegalArgumentException("The BookCreateDto can't be null.");
+        }
         return mapper.map(bookDto, Book.class);
     }
 
     private static Link addSelfAuthorReference(AuthorResponseDto author) {
-        return linkTo(methodOn(AuthorController.class).findAuthorById(author.getId())).withSelfRel().withType(HttpMethod.GET.name());
+        return linkTo(methodOn(AuthorController.class)
+                .findAuthorById(author.getId()))
+                .withSelfRel()
+                .withType(HttpMethod.GET.name());
     }
 }
