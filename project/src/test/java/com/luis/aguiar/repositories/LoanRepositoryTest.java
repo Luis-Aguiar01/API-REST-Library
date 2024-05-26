@@ -119,10 +119,10 @@ class LoanRepositoryTest {
 
     @Test
     @DisplayName(
-            "Should return a list of books " +
+            "Should return a book optional " +
             "when an user id and an user email is passed as an argument to findByIdAndUserEmail method."
     )
-    void shouldReturnAListOfBooks_whenAnUserIdAndAnUserEmailIsPassedAsAnArgumentToFindByIdAndUserEmailMethod() {
+    void shouldReturnABookOptional_whenAnUserIdAndAnUserEmailIsPassedAsAnArgumentToFindByIdAndUserEmailMethod() {
         var findLoans = loanRepository.findByUserEmail("luis@gmail.com", Pageable.unpaged());
         var loanId = findLoans.iterator().next().getId();
 
