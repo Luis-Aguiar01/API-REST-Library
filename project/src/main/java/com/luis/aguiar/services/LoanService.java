@@ -35,7 +35,7 @@ public class LoanService {
         User user = userRepository.findByEmail(loanRequest.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("No user with this ID could be found."));
 
-        if (!user.getHasBookOnLoan()) {
+        if (user.getHasBookOnLoan()) {
             throw new LoanNotAvailableException("You already have an active loan.");
         }
 
@@ -52,7 +52,7 @@ public class LoanService {
         Loan savedLoan = loanRepository.save(loan);
 
         book.setStatus(Status.UNAVAILABLE);
-        user.setHasBookOnLoan(false);
+        user.setHasBookOnLoan(true);
 
         return LoanMapper.toResponseDto(savedLoan);
     }
@@ -61,14 +61,12 @@ public class LoanService {
     public LoanResponseDto findById(UUID id) {
         Loan loan = loanRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No loan with this ID could be found."));
-
         return LoanMapper.toResponseDto(loan);
     }
 
     @Transactional
     public List<LoanResponseDto> findByStatus(boolean status, int page, int quantity) {
         List<Loan> loans = loanRepository.findByActive(status, PageRequest.of(page, quantity));
-
         return loans.stream()
                 .map(LoanMapper::toResponseDto)
                 .toList();
@@ -77,7 +75,6 @@ public class LoanService {
     @Transactional
     public List<LoanResponseDto> findByUserEmail(String email, int page, int quantity) {
         List<Loan> loans = loanRepository.findByUserEmail(email, PageRequest.of(page, quantity));
-
         return loans.stream()
                 .map(LoanMapper::toResponseDto)
                 .toList();
@@ -86,7 +83,6 @@ public class LoanService {
     @Transactional
     public List<LoanResponseDto> findByUserAndActive(String email, boolean status, int page, int quantity) {
         List<Loan> loans = loanRepository.findByUserEmailAndActive(email, status, PageRequest.of(page, quantity));
-
         return loans.stream()
                 .map(LoanMapper::toResponseDto)
                 .toList();
